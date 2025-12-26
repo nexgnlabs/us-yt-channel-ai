@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>USA YouTube Channel Architect</title>
+    <style>
+        :root { --us-blue: #0a3161; --us-red: #b31942; --bg: #0f0f0f; --card: #1a1a1a; --text: #ffffff; --accent: #2563eb; }
+        body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); padding: 20px; line-height: 1.6; }
+        .app-container { max-width: 950px; margin: 0 auto; background: var(--card); border: 1px solid #333; border-radius: 16px; padding: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
+        
+        /* Header */
+        h1 { text-align: center; margin-top: 0; background: linear-gradient(90deg, #fff, #bbb); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .badge { background: #222; border: 1px solid #444; padding: 5px 10px; border-radius: 20px; font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; }
+        .usage-bar { text-align: center; font-size: 12px; color: #666; margin-bottom: 20px; }
+
+        /* Inputs */
+        label { display: block; margin-top: 15px; font-size: 11px; color: #aaa; text-transform: uppercase; font-weight: 700; }
+        input, select, textarea { width: 100%; padding: 14px; background: #0a0a0a; border: 1px solid #333; color: #fff; border-radius: 8px; margin-top: 5px; box-sizing: border-box; transition: 0.2s; }
+        input:focus, select:focus, textarea:focus { border-color: var(--accent); outline: none; }
+
+        /* Buttons */
+        .btn { width: 100%; padding: 16px; border: none; border-radius: 8px; font-weight: 800; font-size: 15px; cursor: pointer; margin-top: 15px; transition: 0.3s; text-transform: uppercase; }
+        .btn-topic { background: var(--accent); color: white; }
+        .btn-script { background: var(--us-red); color: white; }
+        .btn-seo { background: #10b981; color: white; }
+        .btn:hover { filter: brightness(1.2); transform: translateY(-1px); }
+        .btn:disabled { background: #333; cursor: not-allowed; filter: none; }
+
+        /* Sections */
+        .section-title { font-size: 18px; font-weight: bold; border-left: 4px solid var(--accent); padding-left: 15px; margin-top: 40px; margin-bottom: 15px; color: #fff; }
+        
+        /* Topic Cards */
+        .topic-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-top: 15px; }
+        .topic-card { background: #222; padding: 15px; border-radius: 8px; border: 1px solid #333; cursor: pointer; transition: 0.2s; }
+        .topic-card:hover { border-color: var(--accent); background: #2a2a2a; }
+        .topic-title { font-weight: bold; font-size: 15px; color: #fff; display: block; margin-bottom: 5px; }
+        .topic-why { font-size: 12px; color: #888; }
+
+        /* Script & SEO Output */
+        .output-box { background: #000; padding: 25px; border-radius: 10px; border: 1px solid #333; margin-top: 15px; display: none; white-space: pre-wrap; position: relative; }
+        .copy-btn { position: absolute; top: 15px; right: 15px; background: #222; border: 1px solid #444; color: #fff; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 11px; }
+
+        #loader { display: none; text-align: center; color: var(--accent); margin: 20px 0; font-weight: bold; animation: pulse 1s infinite; }
+        @keyframes pulse { 50% { opacity: 0.5; } }
+        .error-msg { color: #ff6b6b; background: rgba(255, 107, 107, 0.1); padding: 15px; border-radius: 8px; text-align: center; margin-top: 15px; display: none; border: 1px solid #ff6b6b; }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <div style="text-align: center;">
+        <span class="badge">🇺🇸 USA Market Edition</span>
+        <h1>American Channel Architect</h1>
+    </div>
+    
+    <div class="usage-bar">Daily Quota: <span id="used" style="color: var(--success); font-weight: bold;">0</span> / 10 Operations</div>
+
+    <label>Gemini API Key</label>
+    <input type="password" id="apiKey" placeholder="Paste your API Key here...">
+
+    <div class="section-title" style="border-color: var(--accent);">STEP 1: Find Viral USA Topics ($$$)</div>
+    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 15px;">
+        <div>
+            <label>Select US Niche</label>
+            <select id="usCategory">
+                <option value="US Finance & Investing">💰 US Finance (Wall St, 401k, Real Estate)</option>
+                <option value="American Tech & Silicon Valley">💻 US Tech (Apple, Tesla, AI)</option>
+                <option value="US Politics & News">📰 US News & Politics</option>
+                <option value="American Sports (NFL/NBA)">🏈 US Sports (NFL, NBA, MLB)</option>
+                <option value="Hollywood & Celebrity">🎬 Hollywood & Pop Culture</option>
+                <option value="US Travel & Vlogs">🇺🇸 US Travel (NYC, LA, National Parks)</option>
+                <option value="American Lifestyle">🍔 American Lifestyle & Food</option>
+                <option value="US History & True Crime">⚖️ US History & True Crime</option>
+                <option value="Gaming (US Trends)">🎮 Gaming (US Trends)</option>
+            </select>
+        </div>
+        <div>
+            <label>Action</label>
+            <button class="btn btn-topic" id="btnTopic" onclick="getViralTopics()">Find Topics</button>
+        </div>
+    </div>
+    <div id="topicOutput" class="topic-grid"></div>
+
+    <div class="section-title" style="border-color: var(--us-red);">STEP 2: Create American Script</div>
+    <label>Selected Topic (Click a card above or type)</label>
+    <input type="text" id="selectedTopic" placeholder="e.g. Why Americans are moving to Texas...">
+    
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+        <div>
+            <label>Duration</label>
+            <select id="duration">
+                <option value="5 minutes">5 Minutes</option>
+                <option value="8 minutes">8 Minutes (Mid-Roll Ad)</option>
+                <option value="12 minutes">12 Minutes (Deep Dive)</option>
+                <option value="60 seconds">Shorts (Vertical)</option>
+            </select>
+        </div>
+        <div>
+            <label>Action</label>
+            <button class="btn btn-script" id="btnScript" onclick="generateUSAScript()">Write Script</button>
+        </div>
+    </div>
+    <div id="scriptOutput" class="output-box">
+        <button class="copy-btn" onclick="copyText('scriptContent')">Copy</button>
+        <div id="scriptContent"></div>
+    </div>
+
+    <div class="section-title" style="border-color: #10b981;">STEP 3: US Market SEO</div>
+    <button class="btn btn-seo" id="btnSeo" onclick="generateUSASEO()">Generate Title, Desc & Tags</button>
+    <div id="seoOutput" class="output-box">
+        <button class="copy-btn" onclick="copyText('seoContent')">Copy</button>
+        <div id="seoContent"></div>
+    </div>
+
+    <div id="loader">🇺🇸 ANALYZING US MARKET TRENDS...</div>
+    <div id="errorBox" class="error-msg"></div>
+</div>
+
+<script>
+    const MAX_DAILY = 10;
+
+    window.onload = () => {
+        updateUsageUI();
+        const savedKey = localStorage.getItem('_usa_yt_key');
+        if (savedKey) document.getElementById('apiKey').value = savedKey;
+    };
+
+    function updateUsageUI() {
+        const usage = getUsage();
+        document.getElementById('used').innerText = usage;
+        if (usage >= MAX_DAILY) {
+            document.querySelectorAll('button').forEach(b => {
+                if(b.className.includes('btn-')) { b.disabled = true; b.innerText = "Daily Limit Reached"; }
+            });
+        }
+    }
+
+    function getUsage() {
+        const date = new Date().toISOString().split('T')[0];
+        const data = JSON.parse(localStorage.getItem('_usa_usage') || '{}');
+        return data[date] || 0;
+    }
+
+    function trackUsage() {
+        const date = new Date().toISOString().split('T')[0];
+        const data = JSON.parse(localStorage.getItem('_usa_usage') || '{}');
+        data[date] = (data[date] || 0) + 1;
+        localStorage.setItem('_usa_usage', JSON.stringify(data));
+        updateUsageUI();
+    }
+
+    // --- MAIN API FUNCTION ---
+    async function callGemini(prompt) {
+        const key = document.getElementById('apiKey').value.trim();
+        const loader = document.getElementById('loader');
+        const errorBox = document.getElementById('errorBox');
+
+        if (!key) { alert("Please enter API Key!"); return null; }
+        if (getUsage() >= MAX_DAILY) { alert("Daily limit reached!"); return null; }
+
+        localStorage.setItem('_usa_yt_key', key);
+        loader.style.display = "block";
+        errorBox.style.display = "none";
+
+        try {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${key}`;
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+            });
+
+            const data = await response.json();
+            
+            if (response.status === 429) {
+                errorBox.innerText = "API Quota Full. Please try again tomorrow.";
+                errorBox.style.display = "block";
+                return null;
+            }
+
+            if (!data.candidates) throw new Error("No response from AI");
+            
+            trackUsage();
+            return data.candidates[0].content.parts[0].text;
+
+        } catch (err) {
+            errorBox.innerText = "Error: " + err.message;
+            errorBox.style.display = "block";
+            return null;
+        } finally {
+            loader.style.display = "none";
+        }
+    }
+
+    // --- STEP 1: GET TOPICS ---
+    async function getViralTopics() {
+        const cat = document.getElementById('usCategory').value;
+        const out = document.getElementById('topicOutput');
+        out.innerHTML = '';
+
+        const prompt = `Act as a YouTube Strategist for the USA Market. 
+        List 4 high-CPM, viral video ideas for the niche: "${cat}".
+        Target Audience: Americans (USA).
+        Focus: Current trends, high search volume in US.
+        Format strictly as JSON Array: [{"title": "...", "cpm_potential": "High/Med", "why_viral": "..."}]`;
+
+        const result = await callGemini(prompt);
+        if (!result) return;
+
+        try {
+            const jsonStr = result.substring(result.indexOf('['), result.lastIndexOf(']') + 1);
+            const ideas = JSON.parse(jsonStr);
+
+            ideas.forEach(idea => {
+                const div = document.createElement('div');
+                div.className = 'topic-card';
+                div.innerHTML = `
+                    <span class="topic-title">${idea.title}</span>
+                    <div class="topic-why">🇺🇸 ${idea.why_viral}</div>
+                    <div style="font-size:10px; color:#10b981; margin-top:5px;">💰 CPM: ${idea.cpm_potential}</div>
+                `;
+                div.onclick = () => {
+                    document.getElementById('selectedTopic').value = idea.title;
+                    window.scrollTo({ top: document.getElementById('selectedTopic').offsetTop - 100, behavior: 'smooth' });
+                };
+                out.appendChild(div);
+            });
+        } catch (e) {
+            alert("Error parsing topics. Try again.");
+        }
+    }
+
+    // --- STEP 2: GENERATE SCRIPT ---
+    async function generateUSAScript() {
+        const topic = document.getElementById('selectedTopic').value;
+        const dur = document.getElementById('duration').value;
+        const box = document.getElementById('scriptOutput');
+        const content = document.getElementById('scriptContent');
+
+        if (!topic) return alert("Select a topic first!");
+        
+        const prompt = `Act as a Professional American YouTube Scriptwriter.
+        Topic: "${topic}". Duration: ${dur}.
+        Target Audience: USA (New York/California/Texas demographic).
+        
+        RULES:
+        1. Language: Native American English (Use 'Color', 'Apartment', 'Gas', 'Vacation').
+        2. Currency: USD ($).
+        3. Tone: High energy, fast-paced (MrBeast/Ryan Trahan style).
+        4. Structure: 
+           - Hook (0-30s): create curiosity.
+           - Intro: What we are doing today.
+           - Body: The content points.
+           - Outro: Like & Subscribe.
+        
+        Write the full script now.`;
+
+        const result = await callGemini(prompt);
+        if (result) {
+            content.innerText = result;
+            box.style.display = 'block';
+        }
+    }
+
+    // --- STEP 3: GENERATE SEO ---
+    async function generateUSASEO() {
+        const topic = document.getElementById('selectedTopic').value;
+        const box = document.getElementById('seoOutput');
+        const content = document.getElementById('seoContent');
+
+        if (!topic) return alert("Select a topic first!");
+
+        const prompt = `Act as a YouTube SEO Expert for the US Market.
+        Topic: "${topic}".
+        
+        Generate:
+        1. 3 Clickbait Titles (Optimized for US Click-Through Rate).
+        2. A video description (first 2 lines SEO optimized).
+        3. 20 High-volume Search Tags for United States.
+        
+        Format as:
+        TITLES:
+        ...
+        DESCRIPTION:
+        ...
+        TAGS:
+        ...`;
+
+        const result = await callGemini(prompt);
+        if (result) {
+            content.innerText = result;
+            box.style.display = 'block';
+        }
+    }
+
+    function copyText(id) {
+        const el = document.getElementById(id);
+        navigator.clipboard.writeText(el.innerText);
+        alert("Copied content!");
+    }
+</script>
+
+</body>
+</html>
